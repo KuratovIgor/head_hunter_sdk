@@ -25,7 +25,7 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		return nil, errors.New("redirect uri is empty")
 	}
 
-	clientApi := api.NewClientApi()
+	clientApi := api.NewClientApi(NewParams())
 
 	return &Client{
 		clientID:     clientID,
