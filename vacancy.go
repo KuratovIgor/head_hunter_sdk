@@ -33,3 +33,7 @@ type (
 		Currency string
 	}
 )
+
+func (c *Client) GetVacancies() (*Vacancies, error) {
+	return c.clientApi.GetVacancies()
+}
