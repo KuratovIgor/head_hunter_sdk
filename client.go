@@ -2,14 +2,16 @@ package headhunter
 
 import (
 	"errors"
-	"github.com/KuratovIgor/head_hunter_sdk/api"
+)
+
+const (
+	baseURL = "https://api.hh.ru"
 )
 
 type Client struct {
 	clientID     string
 	clientSecret string
 	redirectURI  string
-	clientApi    *api.ClientApi
 	UrlParams    *Params
 }
 
@@ -26,13 +28,10 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		return nil, errors.New("redirect uri is empty")
 	}
 
-	clientApi := api.NewClientApi()
-
 	return &Client{
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		redirectURI:  redirectURI,
-		clientApi:    clientApi,
 		UrlParams:    NewParams(),
 	}, nil
 }

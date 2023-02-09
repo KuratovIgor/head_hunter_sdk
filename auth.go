@@ -1,11 +1,18 @@
 package headhunter
 
 import (
+	"bytes"
 	"fmt"
+	"github.com/tidwall/gjson"
+	"io"
+	"net/http"
 	"strconv"
 )
 
-const authorizeURL = "https://hh.ru/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s"
+const (
+	authorizeURL      = "https://hh.ru/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s"
+	authorizeEndpoint = "https://hh.ru/oauth/token"
+)
 
 type AuthorizeResponse struct {
 	AccessToken  string
@@ -22,5 +29,20 @@ func (c *Client) Authorize(chatID int64, authCode string) (*AuthorizeResponse, e
 	urlParameters := "grant_type=authorization_code&client_id=" + c.clientID + "&client_secret=" + c.clientSecret + "&redirect_uri=" + c.redirectURI + "/?chat_id=" + strconv.Itoa(int(chatID)) + "&code=" + authCode
 	postData := []byte(urlParameters)
 
-	return c.clientApi.Authorize(postData)
+	res, reqError := http.Post(authorizeEndpoint, "application/x-www-form-urlencoded", bytes.NewBuffer(postData))
+	if reqError != nil {
+		return nil, reqError
+	}
+
+	defer res.Body.Close()
+
+	data, readError := io.ReadAll(res.Body)
+	if readError != nil {
+		return nil, readError
+	}
+
+	return &AuthorizeResponse{
+		AccessToken:  gjson.Get(string(data), "access_token").String(),
+		RefreshToken: gjson.Get(string(data), "refreshToken").String(),
+	}, nil
 }
