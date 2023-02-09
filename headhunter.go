@@ -49,12 +49,8 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 	}, nil
 }
 
-func (c *Client) GetAuthorizationURL(chatID int64, redirectURL string) (string, error) {
-	if redirectURL == "" {
-		return "", errors.New("redirect url is empty")
-	}
-
-	fullRedirectURL := redirectURL + "/?chat_id=" + strconv.Itoa(int(chatID))
+func (c *Client) GetAuthorizationURL(chatID int64) (string, error) {
+	fullRedirectURL := c.redirectURI + "/?chat_id=" + strconv.Itoa(int(chatID))
 
 	return fmt.Sprintf(authorizeURL, c.clientID, fullRedirectURL), nil
 }
