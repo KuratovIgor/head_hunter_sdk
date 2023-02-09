@@ -44,20 +44,13 @@ type (
 	}
 )
 
-func (c *Client) GetVacancies() (*Vacancies, error) {
-	res, reqError := http.Get(baseURL + vacanciesEndpoint + c.UrlParams.GetQueryString())
-	if reqError != nil {
-		return nil, reqError
-	}
-
+func (c *Client) GetVacancies() Vacancies {
+	res, _ := http.Get(baseURL + vacanciesEndpoint + c.UrlParams.GetQueryString())
 	defer res.Body.Close()
 
-	body, readError := io.ReadAll(res.Body)
-	if readError != nil {
-		return nil, readError
-	}
+	body, _ := io.ReadAll(res.Body)
 
-	var vacancies *Vacancies
+	var vacancies Vacancies
 
 	value := gjson.Get(string(body), "items")
 	for _, item := range value.Array() {
@@ -81,5 +74,5 @@ func (c *Client) GetVacancies() (*Vacancies, error) {
 		vacancies.Items = append(vacancies.Items, vacancy)
 	}
 
-	return vacancies, nil
+	return vacancies
 }
