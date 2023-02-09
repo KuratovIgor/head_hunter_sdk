@@ -11,8 +11,8 @@ const (
 	vacanciesEndpoint = "/vacancies"
 )
 
-func (api *ClientApi) GetVacancies() (*headhunter.Vacancies, error) {
-	res, reqError := http.Get(baseURL + vacanciesEndpoint + api.params.GetQueryString())
+func (api *ClientApi) GetVacancies(params *headhunter.Params) (*headhunter.Vacancies, error) {
+	res, reqError := http.Get(baseURL + vacanciesEndpoint + params.GetQueryString())
 	if reqError != nil {
 		return nil, reqError
 	}

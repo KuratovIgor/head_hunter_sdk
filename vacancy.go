@@ -35,5 +35,5 @@ type (
 )
 
 func (c *Client) GetVacancies() (*Vacancies, error) {
-	return c.clientApi.GetVacancies()
+	return c.clientApi.GetVacancies(c.UrlParams)
 }

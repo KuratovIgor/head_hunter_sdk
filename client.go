@@ -10,6 +10,7 @@ type Client struct {
 	clientSecret string
 	redirectURI  string
 	clientApi    *api.ClientApi
+	UrlParams    *Params
 }
 
 func NewClient(clientID string, clientSecret string, redirectURI string) (*Client, error) {
@@ -25,12 +26,13 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		return nil, errors.New("redirect uri is empty")
 	}
 
-	clientApi := api.NewClientApi(NewParams())
+	clientApi := api.NewClientApi()
 
 	return &Client{
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		redirectURI:  redirectURI,
 		clientApi:    clientApi,
+		UrlParams:    NewParams(),
 	}, nil
 }
