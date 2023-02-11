@@ -1,13 +1,17 @@
 package headhunter
 
 import (
+	"fmt"
 	"github.com/tidwall/gjson"
 	"io"
 	"net/http"
 )
 
 const (
-	vacanciesEndpoint = "/vacancies"
+	vacanciesEndpoint  = "/vacancies"
+	applyToJobEndpoint = "/negotiations"
+
+	applyToJobParams = "?vacancy_id=%s&resume_id=%s&message=%s"
 )
 
 type (
@@ -75,4 +79,15 @@ func (c *Client) GetVacancies() Vacancies {
 	}
 
 	return vacancies
+}
+
+func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string) error {
+	params := fmt.Sprintf(applyToJobParams, vacancyId, resumeId, message)
+
+	_, err := c.sendPostRequest(baseURL+applyToJobEndpoint, params)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
