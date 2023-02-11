@@ -47,6 +47,14 @@ func (c *Client) SetToken(token string) {
 	c.token = token
 }
 
+func (c *Client) IsTokenExists() bool {
+	if c.token == "" {
+		return false
+	}
+
+	return true
+}
+
 func (c *Client) sendPostRequest(endpoint string, params string) (url.Values, error) {
 	req, err := http.NewRequest("POST", endpoint+params, nil)
 	if err != nil {
