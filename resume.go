@@ -10,11 +10,11 @@ const (
 	resumesEndpoint = "/resumes/mine"
 )
 
-func (c *Client) GetResumesIds(token string) []string {
+func (c *Client) GetResumesIds() []string {
 	client := &http.Client{}
 
 	req, _ := http.NewRequest("GET", baseURL+resumesEndpoint, nil)
-	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Authorization", "Bearer "+c.token)
 
 	res, _ := client.Do(req)
 	defer res.Body.Close()
