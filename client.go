@@ -40,7 +40,7 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		redirectURI:  redirectURI,
-		UrlParams:    &Params{},
+		UrlParams:    NewParams(),
 	}, nil
 }
 
