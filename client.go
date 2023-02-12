@@ -16,11 +16,9 @@ const (
 
 type Client struct {
 	httpClient   *http.Client
-	token        string
 	clientID     string
 	clientSecret string
 	redirectURI  string
-	UrlParams    *Params
 }
 
 func NewClient(clientID string, clientSecret string, redirectURI string) (*Client, error) {
@@ -41,29 +39,16 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		redirectURI:  redirectURI,
-		UrlParams:    NewParams(),
 	}, nil
 }
 
-func (c *Client) SetToken(token string) {
-	c.token = token
-}
-
-func (c *Client) IsTokenExists() bool {
-	if c.token == "" {
-		return false
-	}
-
-	return true
-}
-
-func (c *Client) sendRequest(method string, endpoint string, params string) (string, error) {
+func (c *Client) sendRequest(method string, endpoint string, params string, token string) (string, error) {
 	req, err := http.NewRequest(method, endpoint+params, nil)
 	if err != nil {
 		return "", err
 	}
 
-	req.Header.Set("Authorization", "Bearer "+c.token)
+	req.Header.Set("Authorization", "Bearer "+token)
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {

@@ -26,10 +26,10 @@ type (
 	}
 )
 
-func (c *Client) GetResumesIds() ([]string, error) {
+func (c *Client) GetResumesIds(token string) ([]string, error) {
 	var resumesIds []string
 
-	res, err := c.sendRequest(methodGET, baseURL+resumesEndpoint, "")
+	res, err := c.sendRequest(methodGET, baseURL+resumesEndpoint, "", token)
 	if err != nil {
 		return nil, err
 	}
@@ -43,10 +43,10 @@ func (c *Client) GetResumesIds() ([]string, error) {
 	return resumesIds, nil
 }
 
-func (c *Client) GetResumes() ([]Resume, error) {
+func (c *Client) GetResumes(token string) ([]Resume, error) {
 	var resumes []Resume
 
-	res, err := c.sendRequest(methodGET, baseURL+resumesEndpoint, "")
+	res, err := c.sendRequest(methodGET, baseURL+resumesEndpoint, "", token)
 	if err != nil {
 		return nil, err
 	}

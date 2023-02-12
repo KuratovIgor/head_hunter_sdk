@@ -40,8 +40,8 @@ type (
 	}
 )
 
-func (c *Client) GetVacancies() ([]Vacancy, error) {
-	res, err := c.sendRequest(methodGET, baseURL+vacanciesEndpoint, c.UrlParams.GetQueryString())
+func (c *Client) GetVacancies(urlParams Params, token string) ([]Vacancy, error) {
+	res, err := c.sendRequest(methodGET, baseURL+vacanciesEndpoint, urlParams.GetQueryString(), token)
 	if err != nil {
 		return nil, err
 	}
@@ -72,10 +72,10 @@ func (c *Client) GetVacancies() ([]Vacancy, error) {
 	return vacancies, nil
 }
 
-func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string) error {
+func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string, token string) error {
 	params := fmt.Sprintf(applyToJobParams, vacancyId, resumeId, message)
 
-	_, err := c.sendRequest(methodPOST, baseURL+applyToJobEndpoint, params)
+	_, err := c.sendRequest(methodPOST, baseURL+applyToJobEndpoint, params, token)
 	if err != nil {
 		return err
 	}
