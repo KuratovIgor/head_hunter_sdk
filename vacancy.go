@@ -40,7 +40,7 @@ type (
 	}
 )
 
-func (c *Client) GetVacancies(urlParams Params, token string) ([]Vacancy, error) {
+func (c *Client) GetVacancies(urlParams *Params, token string) ([]Vacancy, error) {
 	res, err := c.sendRequest(methodGET, baseURL+vacanciesEndpoint, urlParams.GetQueryString(), token)
 	if err != nil {
 		return nil, err
