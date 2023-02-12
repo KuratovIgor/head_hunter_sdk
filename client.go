@@ -19,6 +19,7 @@ type Client struct {
 	clientID     string
 	clientSecret string
 	redirectURI  string
+	UrlParams    *Params
 }
 
 func NewClient(clientID string, clientSecret string, redirectURI string) (*Client, error) {
@@ -39,6 +40,7 @@ func NewClient(clientID string, clientSecret string, redirectURI string) (*Clien
 		clientID:     clientID,
 		clientSecret: clientSecret,
 		redirectURI:  redirectURI,
+		UrlParams:    &Params{},
 	}, nil
 }
 
