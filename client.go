@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 )
 
 const (
 	baseURL = "https://api.hh.ru"
+
+	methodGET  = "GET"
+	methodPOST = "POST"
 )
 
 type Client struct {
@@ -55,35 +57,30 @@ func (c *Client) IsTokenExists() bool {
 	return true
 }
 
-func (c *Client) sendPostRequest(endpoint string, params string) (url.Values, error) {
-	req, err := http.NewRequest("POST", endpoint+params, nil)
+func (c *Client) sendRequest(method string, endpoint string, params string) (string, error) {
+	req, err := http.NewRequest(method, endpoint+params, nil)
 	if err != nil {
-		return url.Values{}, err
+		return "", err
 	}
 
 	req.Header.Set("Authorization", "Bearer "+c.token)
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return url.Values{}, err
+		return "", err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
 		err := fmt.Sprintf("API Error! Status code %d", res.StatusCode)
-		return url.Values{}, errors.New(err)
+		return "", errors.New(err)
 	}
 
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
-		return url.Values{}, err
+		return "", err
 	}
 
-	values, err := url.ParseQuery(string(resBody))
-	if err != nil {
-		return url.Values{}, err
-	}
-
-	return values, nil
+	return string(resBody), nil
 }

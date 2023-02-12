@@ -3,8 +3,6 @@ package headhunter
 import (
 	"fmt"
 	"github.com/tidwall/gjson"
-	"io"
-	"net/http"
 )
 
 const (
@@ -15,12 +13,6 @@ const (
 )
 
 type (
-	Vacancies struct {
-		Items []Vacancy
-		Pages int
-		Page  int
-	}
-
 	Vacancy struct {
 		Id             string
 		Name           string
@@ -48,16 +40,15 @@ type (
 	}
 )
 
-func (c *Client) GetVacancies() Vacancies {
-	res, _ := http.Get(baseURL + vacanciesEndpoint + c.UrlParams.GetQueryString())
-	defer res.Body.Close()
+func (c *Client) GetVacancies() ([]Vacancy, error) {
+	res, err := c.sendRequest(methodGET, baseURL+vacanciesEndpoint, c.UrlParams.GetQueryString())
+	if err != nil {
+		return nil, err
+	}
+	var vacancies []Vacancy
 
-	body, _ := io.ReadAll(res.Body)
-
-	var vacancies Vacancies
-
-	value := gjson.Get(string(body), "items")
-	for _, item := range value.Array() {
+	items := gjson.Get(res, "items")
+	for _, item := range items.Array() {
 		var vacancy Vacancy
 		vacancy.Id = gjson.Get(item.String(), "id").String()
 		vacancy.Name = gjson.Get(item.String(), "name").String()
@@ -75,16 +66,16 @@ func (c *Client) GetVacancies() Vacancies {
 		vacancy.AlternateUrl = gjson.Get(item.String(), "alternate_url").String()
 		vacancy.Area = gjson.Get(item.String(), "area.name").String()
 
-		vacancies.Items = append(vacancies.Items, vacancy)
+		vacancies = append(vacancies, vacancy)
 	}
 
-	return vacancies
+	return vacancies, nil
 }
 
 func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string) error {
 	params := fmt.Sprintf(applyToJobParams, vacancyId, resumeId, message)
 
-	_, err := c.sendPostRequest(baseURL+applyToJobEndpoint, params)
+	_, err := c.sendRequest(methodPOST, baseURL+applyToJobEndpoint, params)
 	if err != nil {
 		return err
 	}
