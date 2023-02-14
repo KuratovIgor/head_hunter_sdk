@@ -3,6 +3,7 @@ package headhunter
 import (
 	"fmt"
 	"github.com/tidwall/gjson"
+	"net/url"
 )
 
 const (
@@ -73,7 +74,7 @@ func (c *Client) GetVacancies(token string) ([]Vacancy, error) {
 }
 
 func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string, token string) error {
-	params := fmt.Sprintf(applyToJobParams, vacancyId, resumeId, message)
+	params := fmt.Sprintf(applyToJobParams, vacancyId, resumeId, url.QueryEscape(message))
 
 	_, err := c.sendRequest(methodPOST, baseURL+applyToJobEndpoint, params, token)
 	if err != nil {
