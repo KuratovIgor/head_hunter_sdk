@@ -39,6 +39,19 @@ type (
 		To       string
 		Currency string
 	}
+
+	Response struct {
+		State   string
+		Vacancy ShortVacancy
+	}
+
+	ShortVacancy struct {
+		Name         string
+		Salary       Salary
+		Employer     string
+		AlternateUrl string
+		Area         string
+	}
 )
 
 func (c *Client) GetVacancies(token string) ([]Vacancy, error) {
@@ -82,4 +95,38 @@ func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string, t
 	}
 
 	return nil
+}
+
+func (c *Client) GetResponseList(token string) ([]Response, error) {
+	res, err := c.sendRequest(methodGET, baseURL+applyToJobEndpoint, "", token)
+	if err != nil {
+		return nil, err
+	}
+
+	var responses []Response
+
+	items := gjson.Get(res, "items")
+	for _, item := range items.Array() {
+		if len(responses) == 5 {
+			break
+		}
+
+		var response Response
+		var vacancy ShortVacancy
+
+		response.State = gjson.Get(item.String(), "state.name").String()
+
+		vacancy.Name = gjson.Get(item.String(), "vacancy.name").String()
+		vacancy.Salary.From = gjson.Get(item.String(), "vacancy.salary.from").String()
+		vacancy.Salary.To = gjson.Get(item.String(), "vacancy.salary.to").String()
+		vacancy.Salary.Currency = gjson.Get(item.String(), "vacancy.salary.currency").String()
+		vacancy.Employer = gjson.Get(item.String(), "vacancy.employer.name").String()
+		vacancy.AlternateUrl = gjson.Get(item.String(), "vacancy.alternate_url").String()
+		vacancy.Area = gjson.Get(item.String(), "vacancy.area.name").String()
+
+		response.Vacancy = vacancy
+		responses = append(responses, response)
+	}
+
+	return responses, nil
 }
