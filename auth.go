@@ -12,6 +12,7 @@ import (
 const (
 	authorizeURL      = "https://hh.ru/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s"
 	authorizeEndpoint = "https://hh.ru/oauth/token"
+	logoutEndpoint    = "https://api.hh.ru/oauth/token"
 )
 
 type AuthorizeResponse struct {
@@ -45,4 +46,13 @@ func (c *Client) Authorize(chatID int64, authCode string) (*AuthorizeResponse, e
 		AccessToken:  gjson.Get(string(data), "access_token").String(),
 		RefreshToken: gjson.Get(string(data), "refreshToken").String(),
 	}, nil
+}
+
+func (c *Client) Logout(token string) error {
+	_, reqError := c.sendRequest(methodDELETE, logoutEndpoint, "", token)
+	if reqError != nil {
+		return reqError
+	}
+
+	return nil
 }

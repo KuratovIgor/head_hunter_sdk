@@ -10,8 +10,9 @@ import (
 const (
 	baseURL = "https://api.hh.ru"
 
-	methodGET  = "GET"
-	methodPOST = "POST"
+	methodGET    = "GET"
+	methodPOST   = "POST"
+	methodDELETE = "DELETE"
 )
 
 type Client struct {
@@ -59,7 +60,9 @@ func (c *Client) sendRequest(method string, endpoint string, params string, toke
 
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK && res.StatusCode != http.StatusCreated {
+	if res.StatusCode != http.StatusOK &&
+		res.StatusCode != http.StatusCreated &&
+		res.StatusCode != http.StatusNoContent {
 		err := fmt.Sprintf("API Error! Status code %d", res.StatusCode)
 		return "", errors.New(err)
 	}
