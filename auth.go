@@ -44,7 +44,7 @@ func (c *Client) Authorize(chatID int64, authCode string) (*AuthorizeResponse, e
 
 	return &AuthorizeResponse{
 		AccessToken:  gjson.Get(string(data), "access_token").String(),
-		RefreshToken: gjson.Get(string(data), "refreshToken").String(),
+		RefreshToken: gjson.Get(string(data), "refresh_token").String(),
 	}, nil
 }
 
