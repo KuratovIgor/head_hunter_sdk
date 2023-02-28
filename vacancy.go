@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	vacancyEndpoint    = "/vacancies/%s"
 	vacanciesEndpoint  = "/vacancies"
 	applyToJobEndpoint = "/negotiations"
 
@@ -84,6 +85,32 @@ func (c *Client) GetVacancies(token string) ([]Vacancy, error) {
 	}
 
 	return vacancies, nil
+}
+
+func (c *Client) GetVacancy(vacancyId string, token string) (*Vacancy, error) {
+	res, err := c.sendRequest(methodGET, baseURL+fmt.Sprintf(vacancyEndpoint, vacancyId), c.UrlParams.GetQueryString(), token)
+	if err != nil {
+		return nil, err
+	}
+	var vacancy = &Vacancy{}
+
+	vacancy.Id = gjson.Get(res, "id").String()
+	vacancy.Name = gjson.Get(res, "name").String()
+	vacancy.Salary.From = gjson.Get(res, "salary.from").String()
+	vacancy.Salary.To = gjson.Get(res, "salary.to").String()
+	vacancy.Salary.Currency = gjson.Get(res, "salary.currency").String()
+	vacancy.Address.City = gjson.Get(res, "address.city").String()
+	vacancy.Address.Street = gjson.Get(res, "address.street").String()
+	vacancy.Address.Building = gjson.Get(res, "address.building").String()
+	vacancy.PublishedAt = gjson.Get(res, "published_at").String()
+	vacancy.Employer = gjson.Get(res, "employer.name").String()
+	vacancy.Requirement = gjson.Get(res, "snippet.requirement").String()
+	vacancy.Responsibility = gjson.Get(res, "snippet.responsibility").String()
+	vacancy.Schedule = gjson.Get(res, "schedule.name").String()
+	vacancy.AlternateUrl = gjson.Get(res, "alternate_url").String()
+	vacancy.Area = gjson.Get(res, "area.name").String()
+
+	return vacancy, nil
 }
 
 func (c *Client) ApplyToJob(vacancyId string, resumeId string, message string, token string) error {
