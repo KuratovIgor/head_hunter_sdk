@@ -13,12 +13,24 @@ const (
 	authorizeURL      = "https://hh.ru/oauth/authorize?response_type=code&client_id=%s&redirect_uri=%s"
 	authorizeEndpoint = "https://hh.ru/oauth/token"
 	logoutEndpoint    = "https://api.hh.ru/oauth/token"
+	meEndpoint        = "/me"
 )
 
-type AuthorizeResponse struct {
-	AccessToken  string
-	RefreshToken string
-}
+type (
+	AuthorizeResponse struct {
+		AccessToken  string
+		RefreshToken string
+	}
+
+	MeType struct {
+		Name       string
+		LastName   string
+		MiddleName string
+		Email      string
+		Phone      string
+		UserID     string
+	}
+)
 
 func (c *Client) GetAuthorizationURL(chatID int64) (string, error) {
 	fullRedirectURL := c.redirectURI + "/?chat_id=" + strconv.Itoa(int(chatID))
@@ -46,6 +58,24 @@ func (c *Client) Authorize(chatID int64, authCode string) (*AuthorizeResponse, e
 		AccessToken:  gjson.Get(string(data), "access_token").String(),
 		RefreshToken: gjson.Get(string(data), "refresh_token").String(),
 	}, nil
+}
+
+func (c *Client) GetInfoAboutMe(token string) (*MeType, error) {
+	res, err := c.sendRequest(methodGET, baseURL+meEndpoint, "", token)
+	if err != nil {
+		return nil, err
+	}
+
+	var infoAboutMe = &MeType{}
+
+	infoAboutMe.Name = gjson.Get(res, "first_name").String()
+	infoAboutMe.LastName = gjson.Get(res, "last_name").String()
+	infoAboutMe.MiddleName = gjson.Get(res, "middle_name").String()
+	infoAboutMe.Email = gjson.Get(res, "email").String()
+	infoAboutMe.Phone = gjson.Get(res, "phone").String()
+	infoAboutMe.UserID = gjson.Get(res, "id").String()
+
+	return infoAboutMe, nil
 }
 
 func (c *Client) Logout(token string) error {
