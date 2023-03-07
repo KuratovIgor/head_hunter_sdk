@@ -47,6 +47,7 @@ type (
 	}
 
 	ShortVacancy struct {
+		Id           string
 		Name         string
 		Salary       Salary
 		Employer     string
@@ -143,6 +144,7 @@ func (c *Client) GetResponseList(token string) ([]Response, error) {
 
 		response.State = gjson.Get(item.String(), "state.name").String()
 
+		vacancy.Id = gjson.Get(item.String(), "vacancy.id").String()
 		vacancy.Name = gjson.Get(item.String(), "vacancy.name").String()
 		vacancy.Salary.From = gjson.Get(item.String(), "vacancy.salary.from").String()
 		vacancy.Salary.To = gjson.Get(item.String(), "vacancy.salary.to").String()
